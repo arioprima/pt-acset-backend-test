@@ -1,6 +1,8 @@
 const { findByUsername } = require("../repositories/user.repository");
 const comparePassword = require("../helpers/comparePassword");
 const generateJWT = require("../helpers/generateJWT");
+const jwt = require("jsonwebtoken");
+const Session = require("../models/session.model");
 
 async function login(username, password) {
     const user = await findByUsername(username);
@@ -13,7 +15,21 @@ async function login(username, password) {
         throw new Error("Invalid password");
     }
 
-    return generateJWT(user);
+    await Session.deleteMany({
+        user_id: user._id,
+        expires_at: { $gt: new Date() }
+    });
+
+    const token = generateJWT(user);
+    const decoded = jwt.decode(token);
+
+    await Session.create({
+        user_id: user._id,
+        token,
+        expires_at: new Date(decoded.exp * 1000),
+    });
+
+    return token;
 }
 
 module.exports = { login };
