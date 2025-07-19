@@ -1,19 +1,24 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const connectDB = require('./src/config/database');
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const connectDB = require("./src/config/database");
 
 dotenv.config();
 connectDB();
 
 const app = express();
 
+app.use(cors(
+    {
+        origin: "*",
+        methods: "GET,POST,PUT,DELETE",
+        credentials: true,
+    }
+));
+
 app.use(express.json());
 
-const authRoutes = require('./src/routes/auth.routes');
-app.use('/api/auth', authRoutes);
-
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+const routes = require("./src/routes");
+app.use("/api", routes);
 
 module.exports = app;
