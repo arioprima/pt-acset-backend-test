@@ -32,4 +32,9 @@ async function login(username, password) {
     return token;
 }
 
-module.exports = { login };
+async function logout(token) {
+    await Session.deleteOne({ token });
+}
+
+
+module.exports = { login, logout };
