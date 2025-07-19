@@ -1,4 +1,5 @@
 const queueService = require('../services/queue.service');
+const { getIO } = require('../socket');
 
 const getAllQueues = async (req, res) => {
     const queues = await queueService.getAllQueues();
@@ -21,6 +22,10 @@ const takeQueue = async (req, res) => {
         }
 
         const queue = await queueService.takeQueue(branch_id, counter_id);
+
+        const io = getIO();
+        io.to(branch_id.toString()).emit("new_queue_taken", queue);
+
         res.json({ message: "Queue taken successfully", status: 200, data: queue });
     } catch (error) {
         res.status(500).json({ message: error.message, status: 500 });
