@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Env config
+.env
+.env.local
+.env.*.local
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS system files
+.DS_Store
+Thumbs.db
+
+# Build output (jika pakai)
+dist/
+build/
+
+# IDE/editor config
+.vscode/
+.idea/
+
+# Optional: coverage & test
+coverage/
+.nyc_output/
