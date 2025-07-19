@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 
-async function findByUsername(username) {
+const findByUsername = (username) => {
     return User.findOne({ username });
 }
 

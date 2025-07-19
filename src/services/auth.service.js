@@ -4,7 +4,7 @@ const generateJWT = require("../helpers/generateJWT");
 const jwt = require("jsonwebtoken");
 const Session = require("../models/session.model");
 
-async function login(username, password) {
+const login = async (username, password) => {
     const user = await findByUsername(username);
     if (!user) {
         throw new Error("User not found");
@@ -32,7 +32,7 @@ async function login(username, password) {
     return token;
 }
 
-async function logout(token) {
+const logout = async (token) => {
     await Session.deleteOne({ token });
 }
 

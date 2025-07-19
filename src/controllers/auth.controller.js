@@ -1,6 +1,6 @@
 const { login, logout } = require("../services/auth.service");
 
-async function loginController(req, res) {
+const loginController = async (req, res) => {
     try {
         const { username, password } = req.body;
         const token = await login(username, password);
@@ -17,7 +17,7 @@ async function loginController(req, res) {
     }
 }
 
-async function logoutController(req, res) {
+const logoutController = async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
         await logout(token);
