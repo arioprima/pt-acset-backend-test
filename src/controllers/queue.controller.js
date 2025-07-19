@@ -14,10 +14,16 @@ const markQueueAsDone = async (req, res) => {
 
 const takeQueue = async (req, res) => {
     try {
-        const queue = await queueService.takeQueue();
+        const { branch_id, counter_id } = req.body;
+
+        if (!branch_id || !counter_id) {
+            return res.status(400).json({ message: "branch_id and counter_id are required", status: 400 });
+        }
+
+        const queue = await queueService.takeQueue(branch_id, counter_id);
         res.json({ message: "Queue taken successfully", status: 200, data: queue });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message, status: 500 });
     }
 };
 

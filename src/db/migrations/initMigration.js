@@ -3,6 +3,7 @@ const Branch = require("../../models/branch.model");
 const User = require("../../models/user.model");
 const Counter = require("../../models/counter.model");
 const Machine = require("../../models/machine.model");
+const Queue = require("../../models/queue.model");
 
 async function initMigration() {
     const count = await Branch.countDocuments();
@@ -45,6 +46,11 @@ async function initMigration() {
         type: "display",
         created_at: new Date(),
     });
+
+    await Queue.collection.createIndex(
+        { branch_id: 1, number: 1 },
+        { unique: true }
+    );
 }
 
 module.exports = initMigration;

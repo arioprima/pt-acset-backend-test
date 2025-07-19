@@ -1,7 +1,6 @@
 const queueRepository = require('../repositories/queue.repository');
 const Counter = require('../models/counter.model');
-
-
+const Queue = require('../models/queue.model');
 
 const getAllQueues = () => {
     return queueRepository.getAll();
@@ -11,19 +10,24 @@ const markAsDone = (id) => {
     return queueRepository.updateStatus(id, 'done');
 };
 
-const takeQueue = async () => {
-    const counter = await Counter.findOne().populate('branch_id');
-    if (!counter) throw new Error("No counter found");
+async function takeQueue(branch_id, counter_id) {
+    const counter = await Counter.findOneAndUpdate(
+        { _id: counter_id, branch_id },
+        { $inc: { last_number: 1 } },
+        { new: true }
+    );
 
-    const lastNumber = await queueRepository.getLastQueueNumberToday(counter._id);
-    const newNumber = lastNumber + 1;
+    if (!counter) throw new Error("Counter not found");
 
-    const queue = await queueRepository.createQueue({
-        counter_id: counter._id,
-        branch_id: counter.branch_id,
-        number: newNumber,
+    const newQueue = await Queue.create({
+        branch_id,
+        counter_id,
+        number: counter.last_number,
+        status: "waiting",
+        timestamp: new Date(),
     });
 
-    return queue;
-};
+    return newQueue.populate("branch_id");
+}
+
 module.exports = { getAllQueues, markAsDone, takeQueue };
