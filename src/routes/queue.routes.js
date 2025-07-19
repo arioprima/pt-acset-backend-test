@@ -7,4 +7,7 @@ router.get("/", authenticate, authorize("admin"), queueController.getAllQueues);
 
 router.put("/:id/done", authenticate, authorize("admin"), queueController.markQueueAsDone);
 
+router.post("/take", queueController.takeQueue);
+
+
 module.exports = router;

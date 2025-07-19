@@ -12,4 +12,14 @@ const markQueueAsDone = async (req, res) => {
     res.json({ message: "Queue marked as done", status: 200 });
 };
 
-module.exports = { getAllQueues, markQueueAsDone };
+const takeQueue = async (req, res) => {
+    try {
+        const queue = await queueService.takeQueue();
+        res.json({ message: "Queue taken successfully", status: 200, data: queue });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+module.exports = { getAllQueues, markQueueAsDone, takeQueue };

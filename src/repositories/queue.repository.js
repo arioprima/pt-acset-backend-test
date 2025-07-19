@@ -8,4 +8,24 @@ const updateStatus = (id, status) => {
     return Queue.findByIdAndUpdate(id, { status }, { new: true });
 };
 
-module.exports = { getAll, updateStatus };
+const createQueue = async ({ counter_id, branch_id, number }) => {
+    return await Queue.create({
+        counter_id,
+        branch_id,
+        number,
+    });
+};
+
+const getLastQueueNumberToday = async (counter_id) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const latest = await Queue.findOne({
+        counter_id,
+        timestamp: { $gte: startOfDay }
+    }).sort({ number: -1 });
+
+    return latest ? latest.number : 0;
+};
+
+module.exports = { getAll, updateStatus, createQueue, getLastQueueNumberToday };

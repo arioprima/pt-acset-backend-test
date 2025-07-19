@@ -5,6 +5,7 @@ const connectDB = require("./src/config/database");
 
 dotenv.config();
 connectDB();
+require("./src/models");
 
 const app = express();
 
