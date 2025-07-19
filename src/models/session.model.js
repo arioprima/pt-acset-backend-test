@@ -5,6 +5,9 @@ const sessionSchema = new mongoose.Schema({
     token: { type: String, required: true },
     created_at: { type: Date, default: Date.now },
     expires_at: { type: Date, required: true }
+}, {
+    timestamps: true,
+    versionKey: false,
 });
 
 module.exports = mongoose.model("Session", sessionSchema);

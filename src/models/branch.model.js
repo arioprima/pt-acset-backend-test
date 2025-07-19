@@ -5,6 +5,9 @@ const branchSchema = new mongoose.Schema({
     name: { type: String, required: true },
     location: { type: String, required: true },
     created_at: { type: Date, default: Date.now },
+}, {
+    timestamps: true,
+    versionKey: false,
 });
 
 module.exports = mongoose.model("Branch", branchSchema);
