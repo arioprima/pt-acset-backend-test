@@ -32,5 +32,17 @@ const takeQueue = async (req, res) => {
     }
 };
 
+const getLastQueueNumberToday = async (req, res) => {
+    const { counter_id } = req.params;
+    if (!counter_id) {
+        return res.status(400).json({ message: "counter_id is required", status: 400 });
+    }
+    try {
+        const lastNumber = await queueService.getLastQueueNumberToday(counter_id);
+        res.json({ message: "Last queue number retrieved successfully", status: 200, data: lastNumber });
+    } catch (error) {
+        res.status(500).json({ message: error.message, status: 500 });
+    }
+};
 
-module.exports = { getAllQueues, markQueueAsDone, takeQueue };
+module.exports = { getAllQueues, markQueueAsDone, takeQueue, getLastQueueNumberToday };

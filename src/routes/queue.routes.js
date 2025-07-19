@@ -9,5 +9,7 @@ router.put("/:id/done", authenticate, authorize("admin"), queueController.markQu
 
 router.post("/take", queueController.takeQueue);
 
+router.get("/last/:counter_id", authenticate, authorize("admin"), queueController.getLastQueueNumberToday);
+
 
 module.exports = router;
