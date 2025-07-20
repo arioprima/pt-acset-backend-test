@@ -40,8 +40,6 @@ async function initMigration() {
         },
     ];
 
-
-
     for (const branchData of branchesData) {
         const branch = await Branch.create({
             ...branchData,
@@ -49,12 +47,12 @@ async function initMigration() {
         });
 
         await User.create({
-            username: `admin`,
+            username: `admin_${branch.branch_code.toLowerCase()}`,
             password: await hashPassword("admin123"),
             role: "admin",
             branch_id: branch._id,
             created_at: new Date(),
-        });
+        })
 
         await Counter.insertMany([
             {
