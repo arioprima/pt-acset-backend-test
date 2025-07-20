@@ -9,13 +9,11 @@ require("./src/models");
 
 const app = express();
 
-app.use(cors(
-    {
-        origin: "*",
-        methods: "GET,POST,PUT,DELETE",
-        credentials: true,
-    }
-));
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: false,
+}));
 
 app.use(express.json());
 
