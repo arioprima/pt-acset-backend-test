@@ -20,8 +20,8 @@ Aplikasi backend ini adalah bagian dari sistem antrian toko yang dirancang untuk
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/team-smarthome/transforme-app.git
-cd a
+git clone https://github.com/arioprima/pt-acset-backend-test.git
+cd pt-acset-backend-test
 ```
 
 ### 2. Install Dependencies
@@ -38,8 +38,8 @@ Buat file `.env` di root folder dengan isi:
 
 ```env
 PORT=3000
-MONGODB_URI=mongodb://localhost:27017/queueDB
-JWT_SECRET=rahasia_jwt
+MONGO_URI=mongodb+srv://shinamahiru946:agI23XmHyzhz4wBs@cluster0.i5c6mnb.mongodb.net/queue_system?retryWrites=true&w=majority&0
+JWT_SECRET=test1234
 ```
 
 ### 4. Jalankan MongoDB
@@ -65,30 +65,54 @@ npm start
 ## 📚 Struktur Folder
 
 ```
-├── config/
-│   └── db.js
-├── controllers/
-│   ├── adminController.js
-│   ├── authController.js
-│   └── queueController.js
-├── middlewares/
-│   └── authMiddleware.js
-├── migrations/
-│   └── initialSetup.js
-├── models/
-│   ├── Branch.js
-│   ├── Counter.js
-│   └── Queue.js
-├── routes/
-│   ├── adminRoutes.js
-│   ├── authRoutes.js
-│   └── queueRoutes.js
-├── services/
-│   └── queueService.js
-├── .env.example
+├── node_modules/
+├── src/
+│   ├── config/
+│   │   └── database.js
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   ├── branch.controller.js
+│   │   ├── counter.controller.js
+│   │   └── queue.controller.js
+│   ├── helpers/
+│   │   ├── comparePassword.js
+│   │   ├── generateJWT.js
+│   │   └── hashPassword.js
+│   ├── middleware/
+│   │   └── auth.middleware.js
+│   ├── migrations/
+│   │   └── initMigration.js
+│   ├── models/
+│   │   ├── branch.model.js
+│   │   ├── counter.model.js
+│   │   ├── machine.model.js
+│   │   ├── queue.model.js
+│   │   ├── session.model.js
+│   │   └── user.model.js
+│   ├── repositories/
+│   │   ├── branch.repository.js
+│   │   ├── counter.repository.js
+│   │   └── queue.repository.js
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   ├── branch.routes.js
+│   │   ├── counter.routes.js
+│   │   └── queue.routes.js
+│   ├── services/
+│   │   ├── auth.service.js
+│   │   ├── branch.service.js
+│   │   ├── counter.service.js
+│   │   └── queue.service.js
+│   └── socket/
+│       └── index.js
+├── utils/
+│   └── regional.js
+├── .env
 ├── .gitignore
+├── README.md
 ├── app.js
 ├── package.json
+├── package-lock.json
 └── server.js
 ```
 
@@ -96,135 +120,49 @@ npm start
 
 ## 🔐 Endpoint API
 
-### Admin Authentication
+### 🧑‍💼 Admin Authentication
 
-- **POST** `/api/auth/login` - Login admin
-- **POST** `/api/auth/register` - Register admin baru
+- **POST** `/api/auth/login`  
+  Login sebagai admin (mengembalikan token JWT)
 
-### Queue Management
-
-- **GET** `/api/queues` - Dapatkan semua antrian (admin)
-- **POST** `/api/queues` - Tambah antrian baru (pelanggan)
-- **PATCH** `/api/queues/:id/process` - Tandai antrian selesai diproses (admin)
-
-### Branch & Counter
-
-- **GET** `/api/branches` - Dapatkan daftar cabang
-- **GET** `/api/counters` - Dapatkan daftar loket
+- **POST** `/api/auth/logout`  
+  Logout dan blacklist token JWT  
+  **Headers:** `Authorization: Bearer <token>`
 
 ---
 
-## 🧠 Solusi Multiple Kiosk
+### 🏢 Branch & 🪑 Counter
 
-### 1. Atomic Sequence Generation
+- **GET** `/api/branches`  
+  Mengambil semua daftar cabang
 
-Setiap cabang memiliki counter sendiri. Ketika membuat antrian baru, nomor urut di-generate secara atomik.
-
-```javascript
-// services/queueService.js
-const generateQueueNumber = async (branchId) => {
-  const branch = await Branch.findById(branchId);
-  const nextNumber = branch.lastQueueNumber + 1;
-  await Branch.findByIdAndUpdate(branchId, { lastQueueNumber: nextNumber });
-  return nextNumber;
-};
-```
-
-### 2. Realtime Sync with Socket.IO
-
-Setiap kali ada antrian baru atau perubahan status, server mengirim event ke semua client.
-
-```javascript
-// controllers/queueController.js
-exports.addQueue = async (req, res) => {
-  const queue = await Queue.create({ ... });
-  req.app.get('io').emit('new_queue', queue);
-  // ...
-};
-```
-
-Client (baik admin maupun kiosk) akan mendengarkan event:
-
-```javascript
-// Client-side (misal: menggunakan socket.io-client)
-socket.on("new_queue", (queue) => {
-  // Update UI
-});
-```
-
-### 3. Branch & Counter Identification
-
-Setiap kiosk harus terdaftar sebagai `Counter` di database dan terkait dengan `Branch`.
-
-- Pelanggan mengambil antrian di cabang tertentu melalui loket tertentu.
-- Admin hanya melihat antrian di cabang mereka.
+- **GET** `/api/counters?branch_id=<branch_id>`  
+  Mengambil daftar loket berdasarkan cabang tertentu  
+  **Query Param:** `branch_id` - ID cabang
 
 ---
 
-## 🚦 Optimasi untuk Jutaan Data
+### 📋 Queue Management
 
-### 1. Indexing
+- **GET** `/api/queues`  
+  Mengambil seluruh data antrian  
+  **Role:** Admin  
+  **Headers:** `Authorization: Bearer <token>`
 
-Tambahkan index pada field yang sering di-query.
+- **PUT** `/api/queues/:id/done`  
+  Tandai antrian sebagai selesai diproses  
+  **Role:** Admin  
+  **Headers:** `Authorization: Bearer <token>`  
+  **Params:** `id` - ID antrian
 
-```javascript
-// models/Queue.js
-queueSchema.index({ branch: 1, createdAt: -1 });
-queueSchema.index({ status: 1 });
-```
-
-### 2. Pagination
-
-Gunakan pagination untuk endpoint yang menampilkan banyak data.
-
-```javascript
-// controllers/queueController.js
-exports.getQueues = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = 100;
-  const skip = (page - 1) * limit;
-  const queues = await Queue.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 });
-  // ...
-};
-```
-
-### 3. Archiving
-
-## Pindahkan data antrian yang sudah lama (> 1 tahun) ke koleksi arsip.
-
-## 🧪 Testing
-
-Untuk menjalankan test:
-
-```bash
-npm test
-```
+- **POST** `/api/queues/take`  
+  Pelanggan mengambil nomor antrian  
+  **Body:**
+  ```json
+  {
+    "branch_id": "string",
+    "counter_id": "string"
+  }
+  ```
 
 ---
-
-## 📝 Catatan Tambahan
-
-- **Monolith vs Microservice**: Pilih monolith karena aplikasi ini relatif kecil dan tidak memerlukan skalabilitas ekstrem.
-- **MVC vs FE/BE Terpisah**: Gunakan FE/BE terpisah jika ingin mengembangkan aplikasi mobile atau desktop di masa depan.
-- **Environment**: Pastikan untuk tidak menyimpan file `.env` di repository publik.
-
----
-
-## 🤝 Kontribusi
-
-1. Fork proyek ini
-2. Buat branch fitur (`git checkout -b fitur/namafitur`)
-3. Commit perubahan (`git commit -m 'Tambahkan fitur'`)
-4. Push ke branch (`git push origin fitur/namafitur`)
-5. Buat Pull Request
-
----
-
-## 📄 Lisensi
-
-## Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
-**Dibuat dengan ❤️ oleh Tim SmartHome 2024**
