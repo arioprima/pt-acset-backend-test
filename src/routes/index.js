@@ -6,5 +6,7 @@ const queueRoutes = require("./queue.routes");
 
 router.use("/auth", authRoutes);
 router.use("/queue", queueRoutes);
+router.use("/branches", require("./branch.routes"));
+router.use("/counters", require("./counter.routes"));
 
 module.exports = router;
