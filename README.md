@@ -41,7 +41,9 @@ Beberapa strategi yang bisa digunakan:
 Saya menambahkan index untuk field yang sering dipakai query, contohnya:
 
 ````js
-QueueSchema.index({ branch_id: 1, counter_id: 1, created_at: -1 });
+
+QueueSchema.index({ branch_id: 1, number: 1 }, { unique: true }); // mencegah duplikasi
+QueueSchema.index({ branch_id: 1, counter_id: 1, created_at: -1 }); // mempercepat pencarian antrian terbaru
 
 ---
 
