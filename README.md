@@ -2,6 +2,47 @@
 
 Aplikasi backend ini adalah bagian dari sistem antrian toko yang dirancang untuk mencatat dan mengelola antrian pelanggan secara **real-time**. Dibangun menggunakan **Node.js**, **Express.js**, **MongoDB**, serta mendukung **Socket.IO** untuk sinkronisasi antar mesin.
 
+## 📖 Penjelasan Teknis & Pertimbangan Arsitektur
+
+### 1. Monolith atau Microservice?
+
+Aplikasi ini menggunakan pendekatan **Monolith** karena:
+
+- Skala aplikasi masih sederhana dan tidak memiliki banyak modul kompleks.
+- Deployment lebih mudah dan cepat, cocok untuk prototipe dan aplikasi awal.
+- Komunikasi antar komponen cukup langsung, tanpa overhead API internal.
+
+Namun, struktur folder seperti `services/`, `repositories/`, dan `controllers/` sudah disiapkan agar **mudah dipisah menjadi microservice** jika aplikasi berkembang di masa depan (misalnya: service antrian, auth service, dsb).
+
+---
+
+### 2. MVC atau FE & BE dipisah?
+
+Saya menggunakan pendekatan **Frontend dan Backend dipisah (FE & BE separated)** karena:
+
+- Memungkinkan deployment terpisah (misalnya FE di Vercel/Netlify dan BE di VPS).
+- Lebih fleksibel jika ingin ganti teknologi frontend (React Native, mobile app, dsb).
+- Frontend menggunakan React.js dengan konsumsi API dari backend Node.js/Express.
+
+Namun, backend tetap mengikuti prinsip **MVC (Model, View, Controller)** secara internal:
+
+- `models/` = struktur data MongoDB
+- `controllers/` = menangani HTTP request
+- `services/` dan `repositories/` = logika bisnis & query DB
+
+---
+
+### 3. Jika data sudah mencapai jutaan, bagaimana menangani query lambat?
+
+Beberapa strategi yang bisa digunakan:
+
+#### ✅ Indexing di MongoDB
+
+Saya menambahkan index untuk field yang sering dipakai query, contohnya:
+
+````js
+QueueSchema.index({ branch_id: 1, counter_id: 1, created_at: -1 });
+
 ---
 
 ## ✨ Fitur Utama
@@ -22,7 +63,7 @@ Aplikasi backend ini adalah bagian dari sistem antrian toko yang dirancang untuk
 ```bash
 git clone https://github.com/arioprima/pt-acset-backend-test.git
 cd pt-acset-backend-test
-```
+````
 
 ### 2. Install Dependencies
 
