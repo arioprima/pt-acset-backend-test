@@ -71,7 +71,7 @@ cd pt-acset-backend-test
 
 Pastikan menggunakan Node.js versi 14 ke atas.
 
-```bash
+```
 npm install
 ```
 
