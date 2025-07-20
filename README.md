@@ -62,8 +62,10 @@ QueueSchema.index({ branch_id: 1, counter_id: 1, created_at: -1 }); // mempercep
 
 ### 1. Clone Repository
 
-```bash
+```
 git clone https://github.com/arioprima/pt-acset-backend-test.git
+```
+```
 cd pt-acset-backend-test
 ````
 
