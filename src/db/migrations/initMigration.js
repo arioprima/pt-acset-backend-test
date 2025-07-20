@@ -40,17 +40,19 @@ async function initMigration() {
         },
     ];
 
-    await User.create({
-        username: `admin`,
-        password: await hashPassword("admin123"),
-        role: "admin",
-        branch_id: branch._id,
-        created_at: new Date(),
-    });
+
 
     for (const branchData of branchesData) {
         const branch = await Branch.create({
             ...branchData,
+            created_at: new Date(),
+        });
+
+        await User.create({
+            username: `admin`,
+            password: await hashPassword("admin123"),
+            role: "admin",
+            branch_id: branch._id,
             created_at: new Date(),
         });
 
