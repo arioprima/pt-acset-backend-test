@@ -88,6 +88,10 @@ async function initMigration() {
         { unique: true }
     );
 
+    await Queue.collection.createIndex(
+        { branch_id: 1, counter_id: 1, created_at: -1 }
+    );
+
     console.log("✅ Migration completed with sample data for branches, users, counters, and machines.");
 }
 
