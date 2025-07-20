@@ -1,11 +1,17 @@
 module.exports = function registerSocketEvents(socket) {
     socket.on("join_branch", (branchId) => {
-        console.log(`Client ${socket.id} joined branch ${branchId}`);
-        socket.join(branchId);
+        const roomName = `branch_${branchId}`;
+        socket.join(roomName);
+        console.log(`Client ${socket.id} joined branch room: ${roomName}`);
     });
 
-    socket.on("leave_branch", (branchId) => {
-        console.log(`Client ${socket.id} left branch ${branchId}`);
-        socket.leave(branchId);
+    socket.on("join_counter", (counterId) => {
+        const roomName = `counter_${counterId}`;
+        socket.join(roomName);
+        console.log(`Client ${socket.id} joined counter room: ${roomName}`);
+    });
+
+    socket.on("disconnect", () => {
+        console.log(`Client disconnected: ${socket.id}`);
     });
 };
